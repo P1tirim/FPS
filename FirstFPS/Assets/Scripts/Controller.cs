@@ -12,6 +12,7 @@ public class Controller : MonoBehaviour
     public float maxVelocityChange = 10f;
     public float rateOfFire = 0.6f;
     public float elapsedFire = 0.0f;
+    private float yaw = 180f;
     
     public GameObject weapon;
     public GameObject hole;
@@ -27,7 +28,9 @@ public class Controller : MonoBehaviour
     {
         //lock cursor
         Cursor.lockState=CursorLockMode.Locked;
-        
+
+        transform.localEulerAngles = new Vector3(0, yaw, 0);
+
         rb = GetComponent<Rigidbody>();
         anim = weapon.GetComponent<Animation>();
         audio = weapon.GetComponent<AudioSource>();
@@ -37,11 +40,9 @@ public class Controller : MonoBehaviour
     void Update()
     {   
         //Camera rotation
-        float yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensa;
+        yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensa;
         pitch -=sensa * Input.GetAxis("Mouse Y") * 2;
-        
         pitch = Mathf.Clamp(pitch, -maxLookAngle, maxLookAngle);
-
         transform.localEulerAngles = new Vector3(0, yaw, 0);
         camera.transform.localEulerAngles = new Vector3(pitch, 0, 0);
         
@@ -52,7 +53,21 @@ public class Controller : MonoBehaviour
 
         //Shoot with delay
         if(Input.GetMouseButton(0) && elapsedFire >= rateOfFire){
-            
+            //Create Raycast
+            RaycastHit hit;
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit)) {
+                //Rotation hole of bullet, then create
+                Quaternion quaternion = new Quaternion();
+                if(hit.collider.tag == "Forward") quaternion.Set(1, 0, 0, 1);
+                if(hit.collider.tag == "Left") quaternion.Set(0, 0, 1, 1);
+                if(hit.collider.tag == "Right") quaternion.Set(0, 0, -1, 1);
+                if(hit.collider.tag == "Up") quaternion.Set(90, 0, 0, 1);
+                Instantiate(hole, hit.point, quaternion);
+                
+            }
+            //Play shoot animation
             anim.Play("PistolShoot");
             audio.Play();
             elapsedFire = 0.0f;
