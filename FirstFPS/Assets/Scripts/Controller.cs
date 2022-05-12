@@ -10,12 +10,13 @@ public class Controller : MonoBehaviour
     private float pitch = 0.0f;
     public float maxLookAngle = 50f;
     public float maxVelocityChange = 10f;
-    public float rateOfFire = 0.5f;
+    public float rateOfFire = 0.6f;
     public float elapsedFire = 0.0f;
     
     public GameObject weapon;
     public GameObject hole;
     public GameObject target;
+    public Camera camera;
 
     private Rigidbody rb;
     private Vector3 targetVelocity;
@@ -37,9 +38,12 @@ public class Controller : MonoBehaviour
     {   
         //Camera rotation
         float yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensa;
-        pitch +=sensa * Input.GetAxis("Mouse Y") * 2;
+        pitch -=sensa * Input.GetAxis("Mouse Y") * 2;
+        
         pitch = Mathf.Clamp(pitch, -maxLookAngle, maxLookAngle);
-        transform.localEulerAngles = new Vector3(pitch, yaw, 0);
+
+        transform.localEulerAngles = new Vector3(0, yaw, 0);
+        camera.transform.localEulerAngles = new Vector3(pitch, 0, 0);
         
         //Unlock cursor
         if (Input.GetKeyUp (KeyCode.Escape)) {
@@ -48,6 +52,7 @@ public class Controller : MonoBehaviour
 
         //Shoot with delay
         if(Input.GetMouseButton(0) && elapsedFire >= rateOfFire){
+            
             anim.Play("PistolShoot");
             audio.Play();
             elapsedFire = 0.0f;
@@ -59,7 +64,7 @@ public class Controller : MonoBehaviour
     void FixedUpdate(){
         // Motion
         targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0 ,Input.GetAxis("Vertical"));
-        targetVelocity = transform.TransformDirection(targetVelocity) * (-speed);
+        targetVelocity = transform.TransformDirection(targetVelocity) * (speed);
         Vector3 velocity = rb.velocity;
         Vector3 velocityChange = (targetVelocity - velocity);
         velocityChange.y = 0;
