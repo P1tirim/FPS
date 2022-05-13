@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; 
 
 public class Controller : MonoBehaviour
 {
@@ -12,12 +13,16 @@ public class Controller : MonoBehaviour
     public float maxVelocityChange = 10f;
     public float rateOfFire = 0.6f;
     public float elapsedFire = 0.0f;
-    private float yaw = 180f;
+    private float yaw = 0.0f;
+    public int cartridges = 7;
+    private int countCartridges;
+    private int count= 0;
     
     public GameObject weapon;
     public GameObject hole;
     public GameObject target;
     public Camera camera;
+    public Text currentCartridgesText;
 
     private Rigidbody rb;
     private Vector3 targetVelocity;
@@ -29,16 +34,17 @@ public class Controller : MonoBehaviour
         //lock cursor
         Cursor.lockState=CursorLockMode.Locked;
 
-        transform.localEulerAngles = new Vector3(0, yaw, 0);
-
         rb = GetComponent<Rigidbody>();
         anim = weapon.GetComponent<Animation>();
         audio = weapon.GetComponent<AudioSource>();
+
+        countCartridges = cartridges;
     }
 
     // Update is called once per frame
     void Update()
     {   
+        count += 1; 
         //Camera rotation
         yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensa;
         pitch -=sensa * Input.GetAxis("Mouse Y") * 2;
@@ -51,8 +57,11 @@ public class Controller : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
+        
+
         //Shoot with delay
-        if(Input.GetMouseButton(0) && elapsedFire >= rateOfFire){
+        if(Input.GetMouseButton(0) && elapsedFire >= rateOfFire && countCartridges != 0 && !anim.IsPlaying("PistolReloaded")){
+                
             //Create Raycast
             RaycastHit hit;
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
@@ -65,14 +74,30 @@ public class Controller : MonoBehaviour
                 if(hit.collider.tag == "Right") quaternion.Set(0, 0, -1, 1);
                 if(hit.collider.tag == "Up") quaternion.Set(90, 0, 0, 1);
                 Instantiate(hole, hit.point, quaternion);
-                
+                    
             }
             //Play shoot animation
             anim.Play("PistolShoot");
             audio.Play();
             elapsedFire = 0.0f;
+            countCartridges -= 1;
+            currentCartridgesText.text = countCartridges + "/" + cartridges;   
+
+                  
+        }else if(Input.GetMouseButton(0) && countCartridges == 0 && elapsedFire >= rateOfFire){
+            countCartridges = cartridges;
+            currentCartridgesText.text = countCartridges + "/" + cartridges;
+            anim.Play("PistolReloaded");
+            elapsedFire = 0.2f;
         }
-        elapsedFire += Time.deltaTime;
+
+        if(Input.GetKeyDown(KeyCode.R)){
+            countCartridges = cartridges;
+            currentCartridgesText.text = countCartridges + "/" + cartridges;
+            anim.Play("PistolReloaded");
+        }
+
+    elapsedFire += Time.deltaTime;
     }
 
     //For motion
