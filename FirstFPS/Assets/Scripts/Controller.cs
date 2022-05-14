@@ -16,13 +16,14 @@ public class Controller : MonoBehaviour
     private float yaw = 0.0f;
     public int cartridges = 7;
     private int countCartridges;
-    private int count= 0;
-    
+    private int score = 0;
+
     public GameObject weapon;
     public GameObject hole;
     public GameObject target;
     public Camera camera;
     public Text currentCartridgesText;
+    public Text scoreText;
 
     private Rigidbody rb;
     private Vector3 targetVelocity;
@@ -44,7 +45,7 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        count += 1; 
+        
         //Camera rotation
         yaw = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensa;
         pitch -=sensa * Input.GetAxis("Mouse Y") * 2;
@@ -73,8 +74,13 @@ public class Controller : MonoBehaviour
                 if(hit.collider.tag == "Left") quaternion.Set(0, 0, 1, 1);
                 if(hit.collider.tag == "Right") quaternion.Set(0, 0, -1, 1);
                 if(hit.collider.tag == "Up") quaternion.Set(90, 0, 0, 1);
+                if(hit.collider.tag == "Target") quaternion.Set(1, 0, 0, 1);
                 Instantiate(hole, hit.point, quaternion);
-                    
+                
+                if(hit.collider.tag == "Target"){
+                    score += 10;
+                    scoreText.text = score + "";
+            }
             }
             //Play shoot animation
             anim.Play("PistolShoot");
@@ -84,20 +90,23 @@ public class Controller : MonoBehaviour
             currentCartridgesText.text = countCartridges + "/" + cartridges;   
 
                   
-        }else if(Input.GetMouseButton(0) && countCartridges == 0 && elapsedFire >= rateOfFire){
-            countCartridges = cartridges;
-            currentCartridgesText.text = countCartridges + "/" + cartridges;
-            anim.Play("PistolReloaded");
-            elapsedFire = 0.2f;
-        }
+            }else if(Input.GetMouseButton(0) && countCartridges == 0 && elapsedFire >= rateOfFire){
+                countCartridges = cartridges;
+                currentCartridgesText.text = countCartridges + "/" + cartridges;
+                anim.Play("PistolReloaded");
+                elapsedFire = 0.2f;
+            }
 
-        if(Input.GetKeyDown(KeyCode.R)){
-            countCartridges = cartridges;
-            currentCartridgesText.text = countCartridges + "/" + cartridges;
-            anim.Play("PistolReloaded");
-        }
+            if(Input.GetKeyDown(KeyCode.R)){
+                countCartridges = cartridges;
+                currentCartridgesText.text = countCartridges + "/" + cartridges;
+                anim.Play("PistolReloaded");
+            }
 
-    elapsedFire += Time.deltaTime;
+            
+            
+            
+            elapsedFire += Time.deltaTime;
     }
 
     //For motion
@@ -112,4 +121,7 @@ public class Controller : MonoBehaviour
         
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }
+
+
 }
+
