@@ -17,6 +17,7 @@ public class Controller : MonoBehaviour
     public int cartridges = 7;
     private int countCartridges;
     private int score = 0;
+    
 
     public GameObject weapon;
     public GameObject hole;
@@ -29,6 +30,7 @@ public class Controller : MonoBehaviour
     private Vector3 targetVelocity;
     private Animation anim;
     private AudioSource audio;
+    private Animation animTarget;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,6 +40,7 @@ public class Controller : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         anim = weapon.GetComponent<Animation>();
         audio = weapon.GetComponent<AudioSource>();
+        animTarget = target.GetComponent<Animation>();
 
         countCartridges = cartridges;
     }
@@ -75,8 +78,14 @@ public class Controller : MonoBehaviour
                 if(hit.collider.tag == "Right") quaternion.Set(0, 0, -1, 1);
                 if(hit.collider.tag == "Up") quaternion.Set(90, 0, 0, 1);
                 if(hit.collider.tag == "Target") quaternion.Set(1, 0, 0, 1);
-                Instantiate(hole, hit.point, quaternion);
                 
+                
+                GameObject newHole = Instantiate(hole, hit.point, quaternion);
+                
+                //Marke the hole child
+                newHole.transform.parent = hit.collider.transform;
+                
+
                 if(hit.collider.tag == "Target"){
                     score += 10;
                     scoreText.text = score + "";
@@ -105,8 +114,8 @@ public class Controller : MonoBehaviour
 
             
             
-            
             elapsedFire += Time.deltaTime;
+           
     }
 
     //For motion
