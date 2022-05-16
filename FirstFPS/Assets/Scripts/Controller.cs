@@ -16,7 +16,7 @@ public class Controller : MonoBehaviour
     private float yaw = 0.0f;
     public int cartridges = 7;
     private int countCartridges;
-    private int score = 0;
+
     
 
     public GameObject weapon;
@@ -72,24 +72,15 @@ public class Controller : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit)) {
                 //Rotation hole of bullet, then create
-                Quaternion quaternion = new Quaternion();
-                if(hit.collider.tag == "Forward") quaternion.Set(1, 0, 0, 1);
-                if(hit.collider.tag == "Left") quaternion.Set(0, 0, 1, 1);
-                if(hit.collider.tag == "Right") quaternion.Set(0, 0, -1, 1);
-                if(hit.collider.tag == "Up") quaternion.Set(90, 0, 0, 1);
-                if(hit.collider.tag == "Target") quaternion.Set(1, 0, 0, 1);
+                var hitRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                 
+                GameObject newHole = Instantiate(hole, hit.point, hitRotation);
                 
-                GameObject newHole = Instantiate(hole, hit.point, quaternion);
                 
                 //Marke the hole child
                 newHole.transform.parent = hit.collider.transform;
                 
 
-                if(hit.collider.tag == "Target"){
-                    score += 10;
-                    scoreText.text = score + "";
-            }
             }
             //Play shoot animation
             anim.Play("PistolShoot");

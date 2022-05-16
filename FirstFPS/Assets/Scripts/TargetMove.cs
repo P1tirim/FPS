@@ -10,6 +10,7 @@ public class TargetMove : MonoBehaviour
     private bool targetFall = false;
     private bool enable = true;
     private string lastAnim = ""; 
+    GameManager gameManager;
 
     public Animation anim;
 
@@ -17,6 +18,7 @@ public class TargetMove : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animation>();
+        gameManager = GameObject.FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -50,7 +52,10 @@ public class TargetMove : MonoBehaviour
 
     void OnTriggerEnter (Collider other)
     {
-        if(enable) anim.Play("TargetFall");
+        if(enable){
+            anim.Play("TargetFall");
+            gameManager.AddScore();
+        } 
     }
     
     
