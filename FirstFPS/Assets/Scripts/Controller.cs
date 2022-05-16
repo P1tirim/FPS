@@ -16,7 +16,7 @@ public class Controller : MonoBehaviour
     private float yaw = 0.0f;
     public int cartridges = 7;
     private int countCartridges;
-
+    private Vector3 newHitPoint;
     
 
     public GameObject weapon;
@@ -31,6 +31,7 @@ public class Controller : MonoBehaviour
     private Animation anim;
     private AudioSource audio;
     private Animation animTarget;
+    private Collider holeCollider;
     // Start is called before the first frame update
     void Start()
     {
@@ -73,12 +74,17 @@ public class Controller : MonoBehaviour
             if (Physics.Raycast(ray, out hit)) {
                 //Rotation hole of bullet, then create
                 var hitRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+
+                //The offset of the z coordinate when creating a bullet hole for a target that is moving forward.
+                if(hit.transform.gameObject.tag == "Forward"){
+                    newHitPoint = new Vector3(hit.point.x, hit.point.y, hit.point.z - 0.3f);
+                } else newHitPoint = hit.point;
                 
-                GameObject newHole = Instantiate(hole, hit.point, hitRotation);
-                
-                
+                GameObject newHole = Instantiate(hole, newHitPoint, hitRotation);
+                              
                 //Marke the hole child
                 newHole.transform.parent = hit.collider.transform;
+                
                 
 
             }
@@ -89,7 +95,7 @@ public class Controller : MonoBehaviour
             countCartridges -= 1;
             currentCartridgesText.text = countCartridges + "/" + cartridges;   
 
-                  
+            //reload weapon when cartridges is empty
             }else if(Input.GetMouseButton(0) && countCartridges == 0 && elapsedFire >= rateOfFire){
                 countCartridges = cartridges;
                 currentCartridgesText.text = countCartridges + "/" + cartridges;
@@ -97,6 +103,7 @@ public class Controller : MonoBehaviour
                 elapsedFire = 0.2f;
             }
 
+            //Reload when press R
             if(Input.GetKeyDown(KeyCode.R)){
                 countCartridges = cartridges;
                 currentCartridgesText.text = countCartridges + "/" + cartridges;

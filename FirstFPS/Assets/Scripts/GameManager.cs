@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
         
     }
 
+    // +score
    public void AddScore(){
         score += 10;
         scoreText.text = score + "";
