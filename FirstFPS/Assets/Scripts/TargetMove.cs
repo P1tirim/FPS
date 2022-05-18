@@ -41,7 +41,7 @@ public class TargetMove : MonoBehaviour
         }else transform.Translate(Vector3.right * Time.deltaTime * speed);
         
         //Blocking target, if animation of the fall is playing
-        if(anim.IsPlaying("TargetFall") || anim.IsPlaying("TargetFallReverse")){
+        if(anim.IsPlaying("TargetFall")){
             elapsedTargetFall = 0.0f;
             targetFall = true;
             lastAnim = "TargetFall";
@@ -51,22 +51,16 @@ public class TargetMove : MonoBehaviour
         //Animation of lifting target elapsed time
         if(targetFall && elapsedTargetFall >= timeForTargetUP){
 
-            if(this.name == "Military target Reverse"){
-                anim.Play("TargetUpReverse");
-                lastAnim = "TargetUpReverse";
-            } else{
-                anim.Play("TargetUP");
-                lastAnim = "TargetUP";
-            } 
-            
+            anim.Play("TargetUP");
+            lastAnim = "TargetUP";
+        
             targetFall = false;
             
             enable = false;
         }
 
         //Unblocking target for +score and play animation
-        if(!anim.IsPlaying("TargetFall") && !anim.IsPlaying("TargetUP") && lastAnim == "TargetUP" || 
-                    !anim.IsPlaying("TargetFallReverse") && !anim.IsPlaying("TargetUpReverse") && lastAnim == "TargetUpReverse"){
+        if(!anim.IsPlaying("TargetFall") && !anim.IsPlaying("TargetUP") && lastAnim == "TargetUP"){
             enable = true;
         }
 
@@ -77,10 +71,7 @@ public class TargetMove : MonoBehaviour
     void OnTriggerEnter (Collider other)
     {
         if(enable){
-
-            if(this.name == "Military target Reverse"){
-                anim.Play("TargetFallReverse");
-            } else anim.Play("TargetFall");
+            anim.Play("TargetFall");
             
             gameManager.AddScore();
             holeCollider = other.GetComponent<Collider>();

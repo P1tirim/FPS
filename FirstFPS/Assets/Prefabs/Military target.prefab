@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7125192442109082723}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 4.2, y: 2.81, z: 104.95}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 200, y: 100, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -164,6 +164,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83540d4959ed03440975dffc2fbec58f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 10
   timeForTargetUP: 5
   hole: {fileID: 1726058313732824361, guid: 24c7a128e76508a4295d10deb97212ae, type: 3}
