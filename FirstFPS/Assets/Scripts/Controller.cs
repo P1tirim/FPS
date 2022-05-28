@@ -94,6 +94,7 @@ public class Controller : MonoBehaviour
             elapsedFire = 0.0f;
             countCartridges -= 1;
             currentCartridgesText.text = countCartridges + "/" + cartridges;   
+            
 
             //reload weapon when cartridges is empty
             }else if(Input.GetMouseButton(0) && countCartridges == 0 && elapsedFire >= rateOfFire){
