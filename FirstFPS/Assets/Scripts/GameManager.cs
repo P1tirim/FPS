@@ -149,11 +149,51 @@ public class GameManager : MonoBehaviour
                 //remove timer
                 time.text = "";
             }
+
+            //if press button "medium"
+            if(hit.transform.gameObject.name == "Medium" && !hit.transform.gameObject.GetComponent<Animation>().IsPlaying("ButtonDownMedium")){
+
+                //Play animation press button
+                hit.transform.gameObject.GetComponent<Animation>().Play("ButtonDownMedium");
+
+                //Destroy old targets
+                for (int i = 0; i < listSpawnPointStart.Count; i++)
+                {
+                    Destroy(instanciatedTargets[i]);
+                }
+                instanciatedTargets.Clear();
+                listSpawnPointStart.Clear();
+
+                //Spawn point in list
+                SpawnPointEasyINlist();
+
+                //Create new Target and play animation of falling
+                for (int i = 0; i < listSpawnPointStart.Count; i++)
+                {
+                    instanciatedTargets.Add(Instantiate(target, listSpawnPointStart[i].transform) as GameObject);
+                    instanciatedTargets[i].GetComponent<Animation>().Play("TargetFall");
+                }
+
+                //Change gameMode
+                Global.gameMode = "medium";
+
+                //Random for lift target
+                Global.numbering = 1;
+                Global.random = Random.Range(1, 7);
+
+                //reset score
+                score = 0;
+                scoreText.text = score + "";
+
+                //Set timer
+                lostTime = 1;
+                timer = 0.0f;
+            }
         }
         }
 
         //timer
-        if(Global.gameMode == "easy" && lostTime > 0){
+        if(Global.gameMode != "start" && lostTime > 0 || Global.gameMode != "nothing" && lostTime > 0){
             timer = timer + Time.deltaTime; 
             lostTime = timeForEasy - (int)(timer);
             if(lostTime % 60 <10){
@@ -161,7 +201,8 @@ public class GameManager : MonoBehaviour
             }else{
                 time.text = lostTime / 60 + ":" + lostTime % 60;
             }
-        }else if(Global.gameMode == "easy"){
+        //if timer is 0:00 nothing happens
+        }else if(Global.gameMode == "easy" || Global.gameMode == "medium"){
                 Global.gameMode = "nothing";
             }
             

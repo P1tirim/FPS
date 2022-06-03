@@ -8,6 +8,7 @@ public class TargetMove : MonoBehaviour
 {
     public float speed = 10;
     private float elapsedTargetFall = 0.0f;
+    private float elapsedTargetUP = 0.0f;
     public float timeForTargetUP = 5;
     private bool targetFall = false;
     private bool enable = true;
@@ -40,11 +41,12 @@ public class TargetMove : MonoBehaviour
         } 
 
         //Numbering to target and increase speed
-        if(Global.gameMode == "easy" && number == 0){
+        if(Global.gameMode == "easy" && number == 0 || Global.gameMode == "medium" && number == 0){
+
             number = Global.numbering;
             Global.numbering ++;
-            anim["TargetFall"].speed = 2.0f;
-            anim["TargetUP"].speed = 2.0f;
+            anim["TargetFall"].speed = 2.5f;
+            anim["TargetUP"].speed = 2.5f;
         }
         
         //Blocking target, if animation of the fall is playing
@@ -57,7 +59,7 @@ public class TargetMove : MonoBehaviour
         }
 
         //Animation of lifting random target
-        if(targetFall && Global.gameMode == "easy" && number == Global.random && !anim.IsPlaying("TargetFall")){
+        if(targetFall && Global.gameMode == "easy" && number == Global.random && !anim.IsPlaying("TargetFall") || targetFall && Global.gameMode == "medium" && number == Global.random && !anim.IsPlaying("TargetFall")){
             anim.Play("TargetUP");
             lastAnim = "TargetUP";
             targetFall = false;
@@ -67,6 +69,8 @@ public class TargetMove : MonoBehaviour
         //Unblocking target for +score and play animation
         if(!anim.IsPlaying("TargetFall") && !anim.IsPlaying("TargetUP") && lastAnim == "TargetUP" && number == Global.random){
             enable = true;
+            elapsedTargetUP += Time.deltaTime;
+            if(Global.gameMode == "medium") TargetFallForMediumandHardMode();
         }
     }
 
@@ -117,5 +121,16 @@ public class TargetMove : MonoBehaviour
         }
 
         elapsedTargetFall += Time.deltaTime;
+    }
+
+    //Falling targets if elapsedTargetUP > 0.8 in medium gameMode
+    void TargetFallForMediumandHardMode(){
+
+        if(enable && elapsedTargetUP >= 0.8){
+            
+            anim.Play("TargetFall");
+            Global.random = Random.Range(1, 7);
+            elapsedTargetUP = 0.0f;
+        }
     }
 }
