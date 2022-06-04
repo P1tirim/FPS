@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour
     public GameObject spawnPointEasy5;
     public GameObject spawnPointEasy6;
 
+    public GameObject spawnPointHard1;
+    public GameObject spawnPointHard2;
+    public GameObject spawnPointHard3;
+
     List<GameObject> instanciatedTargets = new List<GameObject>();
     List<GameObject> listSpawnPointStart = new List<GameObject>();
     
@@ -189,11 +193,57 @@ public class GameManager : MonoBehaviour
                 lostTime = 1;
                 timer = 0.0f;
             }
+
+            //if press button "Hard"
+            if(hit.transform.gameObject.name == "Hard" && !hit.transform.gameObject.GetComponent<Animation>().IsPlaying("ButtonDownHard")){
+
+                //Play animation press button
+                hit.transform.gameObject.GetComponent<Animation>().Play("ButtonDownHard");
+
+                //Destroy old targets
+                for (int i = 0; i < listSpawnPointStart.Count; i++)
+                {
+                    Destroy(instanciatedTargets[i]);
+                }
+                instanciatedTargets.Clear();
+                listSpawnPointStart.Clear();
+
+                //Change gameMode
+                Global.gameMode = "hard";
+
+                //Spawn point in list
+                SpawnPointEasyINlist();
+
+                //Random for lift target
+                Global.numbering = 1;
+                Global.random = Random.Range(1, 10);
+
+                //Create new Target and play animation of falling
+                for (int i = 0; i < listSpawnPointStart.Count - 3; i++)
+                {
+                    instanciatedTargets.Add(Instantiate(target, listSpawnPointStart[i].transform) as GameObject);
+                    instanciatedTargets[i].GetComponent<Animation>().Play("TargetFall");
+                }
+
+                for (int i = listSpawnPointStart.Count - 3 ; i < listSpawnPointStart.Count; i++)
+                {
+                    instanciatedTargets.Add(Instantiate(targetReverse, listSpawnPointStart[i].transform) as GameObject);
+                    instanciatedTargets[i].GetComponent<Animation>().Play("TargetFall");
+                }
+
+                //reset score
+                score = 0;
+                scoreText.text = score + "";
+
+                //Set timer
+                lostTime = 1;
+                timer = 0.0f;
+            }
         }
         }
 
         //timer
-        if(Global.gameMode != "start" && lostTime > 0 || Global.gameMode != "nothing" && lostTime > 0){
+        if(Global.gameMode != "start" && lostTime > 0 && Global.gameMode != "nothing"){
             timer = timer + Time.deltaTime; 
             lostTime = timeForEasy - (int)(timer);
             if(lostTime % 60 <10){
@@ -202,7 +252,7 @@ public class GameManager : MonoBehaviour
                 time.text = lostTime / 60 + ":" + lostTime % 60;
             }
         //if timer is 0:00 nothing happens
-        }else if(Global.gameMode == "easy" || Global.gameMode == "medium"){
+        }else if(Global.gameMode == "easy" || Global.gameMode == "medium" || Global.gameMode == "hard"){
                 Global.gameMode = "nothing";
             }
             
@@ -235,6 +285,12 @@ public class GameManager : MonoBehaviour
         listSpawnPointStart.Add(spawnPointEasy4 as GameObject);
         listSpawnPointStart.Add(spawnPointEasy5 as GameObject);
         listSpawnPointStart.Add(spawnPointEasy6 as GameObject);
+
+        if(Global.gameMode == "hard"){
+            listSpawnPointStart.Add(spawnPointHard1 as GameObject);
+            listSpawnPointStart.Add(spawnPointHard2 as GameObject);
+            listSpawnPointStart.Add(spawnPointHard3 as GameObject);
+        }
     }
 
     //Spawn start target

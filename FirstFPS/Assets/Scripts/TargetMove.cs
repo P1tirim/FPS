@@ -41,7 +41,7 @@ public class TargetMove : MonoBehaviour
         } 
 
         //Numbering to target and increase speed
-        if(Global.gameMode == "easy" && number == 0 || Global.gameMode == "medium" && number == 0){
+        if(Global.gameMode != "start" && Global.gameMode != "nothing" && number == 0){
 
             number = Global.numbering;
             Global.numbering ++;
@@ -59,18 +59,19 @@ public class TargetMove : MonoBehaviour
         }
 
         //Animation of lifting random target
-        if(targetFall && Global.gameMode == "easy" && number == Global.random && !anim.IsPlaying("TargetFall") || targetFall && Global.gameMode == "medium" && number == Global.random && !anim.IsPlaying("TargetFall")){
+        if(targetFall && Global.gameMode != "start" && number == Global.random && !anim.IsPlaying("TargetFall") && Global.gameMode != "nothing"){
             anim.Play("TargetUP");
             lastAnim = "TargetUP";
             targetFall = false;
             enable = false;
+            
         }
 
         //Unblocking target for +score and play animation
         if(!anim.IsPlaying("TargetFall") && !anim.IsPlaying("TargetUP") && lastAnim == "TargetUP" && number == Global.random){
             enable = true;
             elapsedTargetUP += Time.deltaTime;
-            if(Global.gameMode == "medium") TargetFallForMediumandHardMode();
+            if(Global.gameMode == "medium" || Global.gameMode == "hard") TargetFallForMediumandHardMode();
         }
     }
 
@@ -126,10 +127,17 @@ public class TargetMove : MonoBehaviour
     //Falling targets if elapsedTargetUP > 0.8 in medium gameMode
     void TargetFallForMediumandHardMode(){
 
-        if(enable && elapsedTargetUP >= 0.8){
+        if(enable && elapsedTargetUP >= 0.8 && Global.gameMode == "medium"){
             
             anim.Play("TargetFall");
             Global.random = Random.Range(1, 7);
+            elapsedTargetUP = 0.0f;
+        }
+        
+        if(enable && elapsedTargetUP >= 0.5 && Global.gameMode == "hard"){
+            
+            anim.Play("TargetFall");
+            Global.random = Random.Range(1, 10);
             elapsedTargetUP = 0.0f;
         }
     }
